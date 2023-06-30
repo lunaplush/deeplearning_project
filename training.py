@@ -10,7 +10,6 @@ from model_fasterRCNN import create_model
 from torch.utils.data import DataLoader
 from utils import collate_fn
 
-
 if adjust.MAC:
     DEVICE = torch.device("mps")
 else:
@@ -101,7 +100,7 @@ f = open("epoch_" + model_name + ".num", "wb")
 step = epoch_num + max_epochs
 pickle.dump(step, f)
 f.close()
-model.to("cpu")
+model = model.to("cpu")
 torch.save(model.state_dict(), model_name + ".net")
 
 if FIRST_STEP:
