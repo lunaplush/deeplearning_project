@@ -32,7 +32,7 @@ for i, d in enumerate(test_dataloader):
 predict = model(im)
 
 iou_threshold = 0.1
-threshold = 0.008
+threshold = 0.8
 
 ind = nms(predict[0]["boxes"], predict[0]["scores"], iou_threshold).detach().cpu().numpy()
 boxes = []
