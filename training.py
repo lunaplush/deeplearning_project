@@ -41,40 +41,66 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
     time_start = time.time()
 
     model.to(DEVICE)
+    losses_train = []
+    losses_test = []
+
     for epoch in range(max_epochs):
-        losses = []
+
         scores = []
-        running_loss = 0
+        loss_train = 0
+        loss_test = 0
         i = 0
-        for imgs, targets in train_data:
-            model.train()
+        model.train()
+        for imgs, targets, _, _ in train_data:
+
             optim.zero_grad()
             imgs = list(img.to(DEVICE) for img in imgs)
             targets = [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
             loss_dict = model(imgs, targets)
             loss = sum(loss for loss in loss_dict.values())
-            running_loss += loss.item()
+            loss_train += loss.item()
             loss.backward()
             optim.step()
-            time.sleep(0.01)
 
-            i += 1
-            if i > 2:
-                break
-            print(time.time() - time_start, " c ; current loss on ", i, " : ", running_loss)
+
+
+
+
+        for imgs, targets, _, _ in test_data:
+            with torch.no_grad():
+                loss_dict = model(imgs, targets)
+                print("loss_dict", loss_dict)
+            loss = sum(loss for loss in loss_dict.values())
+            loss_test += loss.item()
+
 
         sheduler.step()
-        running_loss = running_loss / len(train_data.dataset)
-        losses.append(running_loss)
-        print("Epoch {}/{}. Loss {}".format(start_epoch + epoch, start_epoch + max_epochs, running_loss))
-    analysis_data = {"losses": losses}
+        loss_train = loss_train / len(train_data.dataset)
+        loss_test = loss_test / len(test_data.dataset)
+        losses_train.append(loss_train)
+        losses_test.append(loss_test)
+        print("Epoch {}/{}. Loss {}".format(start_epoch + epoch, start_epoch + max_epochs, loss_train))
+
+        i += 1
+        if i > 1:
+            break
+        print(time.time() - time_start, " c ; current loss on ", i, " : ", loss_train)
+    analysis_data = {"losses_train": losses_train, "losses_test":losses_test}
     return analysis_data
 
 
-model = create_model(ProblemClasses.num_classes)
+model = create_model(ProblemClasses.num_classes, pretrained=FIRST_STEP)
 params = [p for p in model.parameters() if p.requires_grad]
-optim = torch.optim.SGD(params, lr=0.005,
-                        momentum=0.9, weight_decay=0.0005)
+if adjust.optimizer_dict["type"] == "Adam":
+    optim = torch.optim.Adam(model.parameters(), lr=adjust.optimizer_dict["lr"],
+                             weight_decay=adjust.optimizer_dict["weight_decay"])
+elif adjust.optimizer_dict["type"] == "SGD":
+    optim = torch.optim.SGD(params, lr=adjust.optimizer_dict["lr"],
+                            momentum=adjust.optimizer_dict["momentum"],
+                            weight_decay=adjust.optimizer_dict["weight_decay"])
+else:
+    print("Неизвестныей тип оптимизатора. ")
+    exit()
 lr_scheduler = torch.optim.lr_scheduler.StepLR(optim,
                                                step_size=3,
                                                gamma=0.1)
