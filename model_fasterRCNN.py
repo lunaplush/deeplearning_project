@@ -2,7 +2,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 
 
-def create_model(num_classes=6, pretrained=False):
+def create_model(num_classes, pretrained=False):
     if pretrained:
         pretrained_znach = "DEFAULT"
     else:

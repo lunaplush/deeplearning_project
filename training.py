@@ -8,7 +8,7 @@ import adjust
 from data import CardDatsSet
 from model_fasterRCNN import create_model
 from torch.utils.data import DataLoader
-from utils import collate_fn
+from utils import collate_fn, ProblemClasses
 
 if adjust.MAC:
     DEVICE = torch.device("mps")
@@ -59,7 +59,7 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
             time.sleep(0.01)
 
             i += 1
-            if i > 30000:
+            if i > 2:
                 break
             print(time.time() - time_start, " c ; current loss on ", i, " : ", running_loss)
 
@@ -71,7 +71,7 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
     return analysis_data
 
 
-model = create_model()
+model = create_model(ProblemClasses.num_classes)
 params = [p for p in model.parameters() if p.requires_grad]
 optim = torch.optim.SGD(params, lr=0.005,
                         momentum=0.9, weight_decay=0.0005)
