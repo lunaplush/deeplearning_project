@@ -82,7 +82,7 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
         print("Epoch {}/{}. Loss {}".format(start_epoch + epoch, start_epoch + max_epochs, loss_train))
 
         i += 1
-        if i > 1:
+        if i > 3000:
             break
         print(time.time() - time_start, " c ; current loss on ", i, " : ", loss_train)
     analysis_data = {"losses_train": losses_train, "losses_test":losses_test}

@@ -12,7 +12,7 @@ from utils import collate_fn, ProblemClasses
 
 model_name = "fastrrcnn2"
 num_classes = 7
-num_workers = 4
+num_workers = 0
 batch_size = 1
 model = create_model(num_classes, pretrained=True)
 #model.load_state_dict(torch.load(model_name + ".net"))
