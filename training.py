@@ -43,17 +43,15 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
     model.to(DEVICE)
     losses_train = []
     losses_test = []
-    i=0
+    i = 0
     for epoch in range(max_epochs):
 
         scores = []
         loss_train = 0
         loss_test = 0
 
-
         model.train()
         for imgs, targets, _, _ in train_data:
-
             optim.zero_grad()
             imgs = list(img.to(DEVICE) for img in imgs)
             targets = [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
@@ -72,7 +70,6 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
             loss = sum(loss for loss in loss_dict.values())
             loss_test += loss.item()
 
-
         sheduler.step()
         loss_train = loss_train / len(train_data.dataset)
         loss_test = loss_test / len(test_data.dataset)
@@ -80,14 +77,14 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
         losses_test.append(loss_test)
         print("Epoch {}/{}. Loss {}".format(start_epoch + epoch, start_epoch + max_epochs, loss_train))
 
-
-        print(time.time() - time_start, " c ; current loss on ", i," : ", loss_train)
-        i+=1
+        print(time.time() - time_start, " c ; current loss on ", i, " : ", loss_train)
+        i += 1
     analysis_data = {"losses_train": losses_train, "losses_test": losses_test}
     print("analysis", analysis_data)
     print(len(analysis_data["losses_train"]))
     print(len(analysis_data["losses_test"]))
     return analysis_data
+
 
 model = create_model(ProblemClasses.num_classes, pretrained=FIRST_STEP)
 params = [p for p in model.parameters() if p.requires_grad]

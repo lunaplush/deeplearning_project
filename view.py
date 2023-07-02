@@ -2,26 +2,29 @@ import os
 import torch
 from torch.utils.data import DataLoader
 from torchvision.ops import nms
+from torchmetrics.detection.mean_ap import MeanAveragePrecision
+
+import adjust
 from data import CardDatsSet
 from model_fasterRCNN import create_model
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from utils import collate_fn, ProblemClasses
-
+from pprint import pprint
 
 model_name = "fastrrcnn4"
-num_classes = 7
-num_workers = 0
+num_classes = ProblemClasses.num_classes
+num_workers = adjust.num_workers
 batch_size = 1
-model = create_model(num_classes, pretrained=True)
+model = create_model(num_classes, pretrained=False)
 model.load_state_dict(torch.load(model_name + ".net"))
 model.eval()
 
 ds = CardDatsSet(os.path.join(os.getcwd(), "images"), mode="test")
 test_dataloader = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
 # im, tr, _, _ = next(iter(test_dataloader))
-find_num = 33
+find_num = 2
 for i, d in enumerate(test_dataloader):
     if i == find_num:
         im = d[0]
@@ -32,6 +35,9 @@ for i, d in enumerate(test_dataloader):
 
 
 predict = model(im)
+metric = MeanAveragePrecision()
+metric.update(predict, tr)
+pprint(metric.compute())
 
 iou_threshold = 0.1
 threshold = 0.35
