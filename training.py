@@ -83,6 +83,9 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
 
         print(time.time() - time_start, " c ; current loss on ", i, " : ", loss_train)
     analysis_data = {"losses_train": losses_train, "losses_test": losses_test}
+    print("analysis", analysis_data)
+    print(len(analysis_data["losses_train"]))
+    print(len(analysis_data["losses_test"]))
     return analysis_data
 
 model = create_model(ProblemClasses.num_classes, pretrained=FIRST_STEP)
