@@ -10,18 +10,18 @@ from matplotlib.collections import PatchCollection
 from utils import collate_fn, ProblemClasses
 
 
-model_name = "fastrrcnn2"
+model_name = "fastrrcnn4"
 num_classes = 7
 num_workers = 0
 batch_size = 1
 model = create_model(num_classes, pretrained=True)
-#model.load_state_dict(torch.load(model_name + ".net"))
+model.load_state_dict(torch.load(model_name + ".net"))
 model.eval()
 
 ds = CardDatsSet(os.path.join(os.getcwd(), "images"), mode="test")
 test_dataloader = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
 # im, tr, _, _ = next(iter(test_dataloader))
-find_num = 29
+find_num = 33
 for i, d in enumerate(test_dataloader):
     if i == find_num:
         im = d[0]
@@ -32,10 +32,10 @@ for i, d in enumerate(test_dataloader):
 
 
 predict = model(im)
-print(predict)
+
 iou_threshold = 0.1
 threshold = 0.35
-#print(max( predict[0]["scores"]))
+print(max( predict[0]["scores"]))
 ind = nms(predict[0]["boxes"], predict[0]["scores"], iou_threshold).detach().cpu().numpy()
 print(list(zip(predict[0]["scores"][ind], predict[0]["labels"][ind])))
 
@@ -57,5 +57,13 @@ ax.add_collection(pc)
 for i in range(len(labels)):
     xy = labels_xy[i]
     l = labels[i]
-    ax.text(xy[0]+6, xy[1]-11, l, bbox={"edgecolor":"g", "facecolor":"none"}, color="g")
+    ax.text(xy[0]+6, xy[1]-11, l, bbox={"edgecolor":"g", "facecolor":"none"}, color="w")
+
+model.train()
+loss_dict = model(im, tr)
+loss = sum(loss for loss in loss_dict.values())
+print("loss:",loss)
 plt.show()
+
+
+
