@@ -38,9 +38,10 @@ def plot_losses_for_one_nettype_compare(net_name, losses_list):
 
     plt.show()
 def plot_losses(model_name):
-    df = pd.read_csv("fastrrcnn4.csv")
+    df = pd.read_csv(model_name+".csv")
     fig, ax = plt.subplots(1,1, figsize=(5,5))
     ax.plot(df["losses_train"])
+    ax.plot(df["losses_test"])
     plt.show()
 
 plot_losses(model_name)

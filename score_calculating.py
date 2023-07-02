@@ -11,7 +11,7 @@ from matplotlib.collections import PatchCollection
 from utils import collate_fn, ProblemClasses
 from pprint import pprint
 import adjust
-
+import gc
 model_name = "fastrrcnn4"
 num_classes = ProblemClasses.num_classes
 num_workers = adjust.num_workers
@@ -47,6 +47,7 @@ for i, d in enumerate(test_dataloader):
     metric.update(predict_nms, tr)
     scores_nms = metric.compute()
     score_map_nms_all += scores_nms["map"] / N
+    gc.collect()
     print("num", i)
 print("SCORES", score_map_all, "with NMS", score_map_nms_all)
 
