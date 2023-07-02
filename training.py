@@ -43,7 +43,7 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
     model.to(DEVICE)
     losses_train = []
     losses_test = []
-
+    i=0
     for epoch in range(max_epochs):
 
         scores = []
@@ -81,7 +81,8 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
         print("Epoch {}/{}. Loss {}".format(start_epoch + epoch, start_epoch + max_epochs, loss_train))
 
 
-        print(time.time() - time_start, " c ; current loss on ", i, " : ", loss_train)
+        print(time.time() - time_start, " c ; current loss on ", i," : ", loss_train)
+        i+=1
     analysis_data = {"losses_train": losses_train, "losses_test": losses_test}
     print("analysis", analysis_data)
     print(len(analysis_data["losses_train"]))
