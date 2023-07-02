@@ -49,21 +49,23 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
         scores = []
         loss_train = 0
         loss_test = 0
-        #
-        #
-        #     model.train()
-        #     for imgs, targets, _, _ in train_data:
-        #
-        #         optim.zero_grad()
-        #         imgs = list(img.to(DEVICE) for img in imgs)
-        #         targets = [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
-        #         loss_dict = model(imgs, targets)
-        #         loss = sum(loss for loss in loss_dict.values())
-        #         loss_train += loss.item()
-        #         loss.backward()
-        #         optim.step()
+
+
+        model.train()
+        for imgs, targets, _, _ in train_data:
+
+            optim.zero_grad()
+            imgs = list(img.to(DEVICE) for img in imgs)
+            targets = [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
+            loss_dict = model(imgs, targets)
+            loss = sum(loss for loss in loss_dict.values())
+            loss_train += loss.item()
+            loss.backward()
+            optim.step()
 
         for imgs, targets, _, _ in test_data:
+            imgs = list(img.to(DEVICE) for img in imgs)
+            targets = [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
             with torch.no_grad():
                 loss_dict = model(imgs, targets)
                 print("loss_dict", loss_dict)
