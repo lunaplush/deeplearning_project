@@ -8,6 +8,7 @@ import adjust
 from data import CardDatsSet
 from model_fasterRCNN import create_model
 from torch.utils.data import DataLoader
+from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from utils import collate_fn, ProblemClasses
 
 if adjust.MAC:
@@ -24,6 +25,7 @@ num_workers = adjust.num_workers
 
 dataset_train = CardDatsSet(os.path.join(os.getcwd(), "images"))
 dataset_test = CardDatsSet(os.path.join(os.getcwd(), "images"), mode="test")
+N_test = len(dataset_test)
 train_data = DataLoader(dataset_train,
                         batch_size=batch_size,
                         shuffle=True,
@@ -36,17 +38,26 @@ test_data = DataLoader(dataset_test,
                        num_workers=num_workers,
                        collate_fn=collate_fn)
 
+val_data = DataLoader(dataset_test,
+                       batch_size=N_test,
+                       shuffle=False,
+                       num_workers=num_workers,
+                       collate_fn=collate_fn)
+
 
 def train(model, start_epoch, max_epochs, optim, sheduler):
-    time_start = time.time()
+    time_start = time_next = time.time()
+    metric = MeanAveragePrecision()
 
     model.to(DEVICE)
     losses_train = []
     losses_test = []
+    scores_maP = []
+    scores_maR = []
     i = 0
     for epoch in range(max_epochs):
 
-        scores = []
+
         loss_train = 0
         loss_test = 0
 
@@ -70,6 +81,14 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
             loss = sum(loss for loss in loss_dict.values())
             loss_test += loss.item()
 
+        img_val, targets_val = next(iter(val_data))
+        predict = model(img_val)
+        metric.update(predict, targets_val)
+        scores = metric.compute()
+        scores_maP.append(scores["map"].detach().numpy())
+        scores_maP.append(scores["mar_1"].detach().numpy())
+
+
         sheduler.step()
         loss_train = loss_train / len(train_data.dataset)
         loss_test = loss_test / len(test_data.dataset)
@@ -77,12 +96,12 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
         losses_test.append(loss_test)
         print("Epoch {}/{}. Loss {}".format(start_epoch + epoch, start_epoch + max_epochs, loss_train))
 
-        print(time.time() - time_start, " c ; current loss on ", i, " : ", loss_train)
+        print(time.time() - time_next, " c ; current loss on ", i, " : ", loss_train)
+        time_next = time.time()
         i += 1
-    analysis_data = {"losses_train": losses_train, "losses_test": losses_test}
-    print("analysis", analysis_data)
-    print(len(analysis_data["losses_train"]))
-    print(len(analysis_data["losses_test"]))
+    analysis_data = {"losses_train": losses_train, "losses_test": losses_test,
+                     "scores_map":scores_maP, "scores_mar":scores_maR }
+    print(fr"Посчитано за {time.time() - time_start} c")
     return analysis_data
 
 

@@ -14,7 +14,7 @@ import adjust
 import gc
 
 model_name = adjust.model_name
-# model_name = "fastrrcnn4"
+model_name = "fastrrcnn_Adam_lr0.001_epochs25"
 num_classes = ProblemClasses.num_classes
 num_workers = adjust.num_workers
 batch_size = 1
@@ -26,6 +26,7 @@ model.eval()
 
 ds = CardDatsSet(os.path.join(os.getcwd(), "images"), mode="test")
 N = len(ds)
+batch_size = N
 test_dataloader = DataLoader(ds, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
 # im, tr, _, _ = next(iter(test_dataloader))
 
@@ -40,8 +41,8 @@ for i, d in enumerate(test_dataloader):
     file_name = d[3][0].values[0]
     predict = model(im)
     metric.update(predict, tr)
-    #scores = metric.compute()
-    #score_map_all += scores["map"] / N
+    scores = metric.compute()
+    score_map_all += scores["map"] / N
     # ind = nms(predict[0]["boxes"], predict[0]["scores"], iou_threshold).detach().cpu().numpy()
     # predict_nms = [{}]
     # for k in predict[0].keys():

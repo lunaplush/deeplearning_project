@@ -5,8 +5,7 @@ import adjust
 
 model_name = adjust.model_name
 
-model_name="fastrrcnn_Adam_lr0.001_epochs25"
-
+model_name = "fastrrcnn_Adam_lr0.001_epochs25"
 
 line_style = ["solid", "dotted", "dashed", "dashdot"]
 
@@ -39,13 +38,28 @@ def plot_losses_for_one_nettype_compare(net_name, losses_list):
     [ax[i][1].set_ylim(0, 1) for i in range(3)]
 
     plt.show()
-def plot_losses(model_name):
-    df = pd.read_csv(model_name+".csv")
-    fig, ax = plt.subplots(1,1, figsize=(5,5))
+
+
+def plot_compare_losses_for_different_models(models_list):
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+    for i, model_name in enumerate(models_list):
+        df = pd.read_csv(model_name+".csv")
+        ax[0].plot(df["losses_train"], label=model_name, c="#12DDDD", linestyle=line_style[i])
+        if "losses_test" in df.columns:
+            ax[1].plot(df["losses_test"], label=model_name, c="#12DD12", linestyle=line_style[i])
+    ax[0].legend()
+    ax[1].legend()
+    plt.show()
+
+
+def plot_losses_for_model(model_name):
+    df = pd.read_csv(model_name + ".csv")
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
     ax.plot(df["losses_train"])
     ax.plot(df["losses_test"])
     plt.show()
 
-plot_losses(model_name)
 
-#plot_losses_for_one_nettype_compare("fastrrcnn4", pd.DataFrame(analysis_csv))
+#plot_losses_for_model(model_name)
+plot_compare_losses_for_different_models(["fastrrcnn4","fastrrcnn_Adam_lr0.001_epochs25","fastrrcnn_Adam_lr0.0005_epochs10"])
+# plot_losses_for_one_nettype_compare("fastrrcnn4", pd.DataFrame(analysis_csv))
