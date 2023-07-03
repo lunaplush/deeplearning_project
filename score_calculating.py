@@ -12,7 +12,9 @@ from utils import collate_fn, ProblemClasses
 from pprint import pprint
 import adjust
 import gc
-model_name = "fastrrcnn4"
+
+model_name = adjust.model_name
+# model_name = "fastrrcnn4"
 num_classes = ProblemClasses.num_classes
 num_workers = adjust.num_workers
 batch_size = 1
