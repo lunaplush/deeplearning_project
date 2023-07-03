@@ -4,7 +4,7 @@ import pickle
 import adjust
 
 model_name = adjust.model_name
-model_name="fastrrcnn4"
+model_name="fastrrcnn_Adam_lr0.0005_epochs10"
 
 line_style = ["solid", "dotted", "dashed", "dashdot"]
 

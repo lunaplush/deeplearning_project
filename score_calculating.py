@@ -38,16 +38,16 @@ for i, d in enumerate(test_dataloader):
     file_name = d[3][0].values[0]
     predict = model(im)
     metric.update(predict, tr)
-    scores = metric.compute()
-    score_map_all += scores["map"] / N
-    ind = nms(predict[0]["boxes"], predict[0]["scores"], iou_threshold).detach().cpu().numpy()
-    predict_nms = [{}]
-    for k in predict[0].keys():
-        predict_nms[0][k] = predict[0][k][ind]
-    metric.update(predict_nms, tr)
-    scores_nms = metric.compute()
-    score_map_nms_all += scores_nms["map"] / N
-    gc.collect()
+    #scores = metric.compute()
+    #score_map_all += scores["map"] / N
+    # ind = nms(predict[0]["boxes"], predict[0]["scores"], iou_threshold).detach().cpu().numpy()
+    # predict_nms = [{}]
+    # for k in predict[0].keys():
+    #     predict_nms[0][k] = predict[0][k][ind]
+    # metric.update(predict_nms, tr)
+    # scores_nms = metric.compute()
+    # score_map_nms_all += scores_nms["map"] / N
+    # gc.collect()
     print("num", i)
 print("SCORES", score_map_all, "with NMS", score_map_nms_all)
 
