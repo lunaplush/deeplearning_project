@@ -83,12 +83,12 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
             loss = sum(loss for loss in loss_dict.values())
             loss_test += loss.item()
 
-        img_val, targets_val = next(iter(val_data))
-        predict = model(img_val)
-        metric.update(predict, targets_val)
-        scores = metric.compute()
-        scores_maP.append(scores["map"].detach().numpy())
-        scores_maP.append(scores["mar_1"].detach().numpy())
+        # img_val, targets_val = next(iter(val_data))
+        # predict = model(img_val)
+        # metric.update(predict, targets_val)
+        # scores = metric.compute()
+        # scores_maP.append(scores["map"].detach().numpy())
+        # scores_maP.append(scores["mar_1"].detach().numpy())
 
 
         sheduler.step()
@@ -102,7 +102,8 @@ def train(model, start_epoch, max_epochs, optim, sheduler):
         time_next = time.time()
         i += 1
     analysis_data = {"losses_train": losses_train, "losses_test": losses_test,
-                     "scores_map":scores_maP, "scores_mar":scores_maR }
+                    # "scores_map":scores_maP, "scores_mar":scores_maR
+                     }
     print(fr"Посчитано за {time.time() - time_start} c")
     return analysis_data
 
