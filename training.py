@@ -22,6 +22,8 @@ model_name = adjust.model_name
 batch_size = adjust.batch_size
 max_epochs = adjust.max_epochs
 num_workers = adjust.num_workers
+sheduler_step_size = adjust.sheduler["step_size"]
+sheduler_gamma = adjust.sheduler["gamma"]
 
 dataset_train = CardDatsSet(os.path.join(os.getcwd(), "images"))
 dataset_test = CardDatsSet(os.path.join(os.getcwd(), "images"), mode="test")
@@ -118,8 +120,8 @@ else:
     print("Неизвестныей тип оптимизатора. ")
     exit()
 lr_scheduler = torch.optim.lr_scheduler.StepLR(optim,
-                                               step_size=3,
-                                               gamma=0.1)
+                                               step_size=sheduler_step_size,
+                                               gamma=sheduler_gamma)
 
 if FIRST_STEP:
     f = open("epoch_" + model_name + ".num", "wb")

@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from torch.utils.data import DataLoader
-from torchvision.transforms import PILToTensor, Compose, ConvertImageDtype, RandomHorizontalFlip
+from torchvision.transforms import PILToTensor, Compose, ConvertImageDtype, RandomHorizontalFlip, Resize
 from utils import ProblemClasses
 from torchvision.transforms import functional as F
 
 torch.manual_seed(17)
 
 class CardDatsSet(DataLoader):
-    def __init__(self, root, mode="train"):
+    def __init__(self, root, mode="train", augmentation=False):
         super().__init__(self)
         self.mode = mode
         self.root = os.path.join(root, mode)
@@ -23,17 +23,19 @@ class CardDatsSet(DataLoader):
         self.df = pd.read_csv(os.path.join(root, mode + "_labels.csv"))
         #self.df["boxes"] = self.df[["xmin", "ymin", "xmax", "ymax"]].apply(list, axis=1)
         self.transform = self.make_transform()
+        self.augmentation = augmentation
 
     def make_transform(self):
         transforms = []
         transforms.append(PILToTensor())
+        transforms.append(Resize((250,150)))
         transforms.append(ConvertImageDtype(torch.float))
         return Compose(transforms)
 
     def __getitem__(self, item):
 
-        flip_augmentation = False if self.mode == "test" or np.random.random_sample(1) < 0.5 else True
-        flip_augmentation2 = False if self.mode == "test" or np.random.random_sample(1) < 0.5 else True
+        flip_augmentation = False if self.augmentation and self.mode == "test" or np.random.random_sample(1) < 0.5 else True
+        flip_augmentation2 = False if self.augmentation and self.mode == "test" or np.random.random_sample(1) < 0.5 else True
         img_path = os.path.join(self.root, self.imgs[item])
         img = Image.open(img_path)
         if flip_augmentation:

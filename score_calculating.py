@@ -42,7 +42,12 @@ for i, d in enumerate(test_dataloader):
     flip_flag = d[2]
     file_name = d[3][0].values[0]
     predict = model(im)
-    predictes.append(predict)
+    ind = nms(predict[0]["boxes"], predict[0]["scores"], iou_threshold).detach().cpu().numpy()
+    predict_nms = [{}]
+    for k in predict[0].keys():
+         predict_nms[0][k] = predict[0][k][ind]
+    predictes.append(predict_nms[0])
+    del predict
     targets.append(tr)
     gc.collect()
     print(i)
