@@ -6,7 +6,7 @@ import adjust
 model_name = adjust.model_name
 
 model_name = "fastrrcnn_Adam_lr0.001_epochs25"
-
+model_name = "fastrrcnn8_resize"
 line_style = ["solid", "dotted", "dashed", "dashdot"]
 
 
@@ -60,6 +60,6 @@ def plot_losses_for_model(model_name):
     plt.show()
 
 
-#plot_losses_for_model(model_name)
-plot_compare_losses_for_different_models(["fastrrcnn4","fastrrcnn_Adam_lr0.001_epochs25","fastrrcnn_Adam_lr0.0005_epochs10"])
+plot_losses_for_model(model_name)
+#plot_compare_losses_for_different_models(["fastrrcnn4","fastrrcnn_Adam_lr0.001_epochs25","fastrrcnn_Adam_lr0.0005_epochs10"])
 # plot_losses_for_one_nettype_compare("fastrrcnn4", pd.DataFrame(analysis_csv))
